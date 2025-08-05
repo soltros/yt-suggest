@@ -2,7 +2,7 @@
 
 A self-hostable web application that transforms your music recommendations into organized playlists by intelligently searching YouTube, providing interactive previews, and enabling selective downloads with built-in rate limiting.
 
-![YT-Suggest Interface](https://img.shields.io/badge/Interface-Web%20Based-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-brightgreen) ![Python](https://img.shields.io/badge/Python-3.11+-orange) ![License](https://img.shields.io/badge/License-MIT-green)
+![YT-Suggest Interface](https://img.shields.io/badge/Interface-Web%20Based-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-brightgreen) ![Python](https://img.shields.io/badge/Python-3.11+-orange) ![License](https://img.shields.io/badge/License-GPLv3-blue)
 
 ## ✨ Features
 
@@ -243,7 +243,7 @@ ports:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
 ## 🤝 Contributing
 
