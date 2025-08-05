@@ -47,7 +47,7 @@ A self-hostable web application that transforms your music recommendations into 
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo>
+   git clone https://github.com/soltros/yt-suggest
    cd yt-suggest
    ```
 
