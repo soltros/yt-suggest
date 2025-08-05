@@ -1,0 +1,4 @@
+Flask==3.0.3
+yt-dlp>=2025.06.30
+mutagen==1.47.0
+Werkzeug==3.0.4
