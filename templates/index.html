@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Playlist Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 200px;
+            font-family: monospace;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .status-bar {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .search-results {
+            margin-top: 30px;
+        }
+
+        .song-result {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .song-header {
+            background: #f8fafc;
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .song-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .song-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .song-status.in_library {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .song-status.found {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+
+        .song-status.not_found {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .song-status.invalid_format {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .youtube-results {
+            padding: 20px;
+        }
+
+        .youtube-result {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .youtube-result:hover {
+            border-color: #667eea;
+        }
+
+        .youtube-result.selected {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .result-checkbox {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .result-thumbnail {
+            width: 120px;
+            height: 90px;
+            border-radius: 8px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+
+        .result-meta {
+            font-size: 14px;
+            color: #718096;
+            line-height: 1.4;
+        }
+
+        .result-duration {
+            background: #edf2f7;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+
+        .library-match {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .library-match-title {
+            font-weight: 600;
+            color: #234e52;
+            margin-bottom: 5px;
+        }
+
+        .library-match-path {
+            font-size: 14px;
+            color: #4a5568;
+            font-family: monospace;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .download-controls {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .download-info {
+            margin-bottom: 20px;
+        }
+
+        .download-status {
+            font-size: 14px;
+            color: #4a5568;
+            margin-top: 10px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #276749;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            border: 1px solid #fc8181;
+            color: #c53030;
+        }
+
+        .alert-info {
+            background: #ebf8ff;
+            border: 1px solid #90cdf4;
+            color: #2b6cb0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .bulk-actions {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4a5568;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #718096;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 Music Playlist Generator</h1>
+            <p>Search, preview, and download your music recommendations</p>
+        </div>
+
+        <!-- Library Status -->
+        <div class="card">
+            <h2>📚 Library Status</h2>
+            <div class="status-bar" id="library-status">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading library status...</p>
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="reloadIndex()">
+                🔄 Reload Index
+            </button>
+        </div>
+
+        <!-- Song Search Form -->
+        <div class="card">
+            <h2>🔍 Search Songs</h2>
+            <form id="search-form">
+                <div class="input-group">
+                    <label for="song-list">Song List (Artist - Title, one per line):</label>
+                    <textarea id="song-list" placeholder="The Beatles - Hey Jude&#10;Led Zeppelin - Stairway to Heaven&#10;Pink Floyd - Comfortably Numb" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn">
+                    🔍 Search for Songs
+                </button>
+            </form>
+        </div>
+
+        <!-- Search Results -->
+        <div id="search-results-section" class="hidden">
+            <div class="card">
+                <h2>📊 Search Results</h2>
+                
+                <!-- Summary Stats -->
+                <div class="summary-stats" id="summary-stats"></div>
+                
+                <!-- Bulk Actions -->
+                <div class="bulk-actions">
+                    <button class="btn btn-secondary" onclick="selectAll()">✅ Select All</button>
+                    <button class="btn btn-secondary" onclick="selectNone()">❌ Select None</button>
+                    <button class="btn btn-secondary" onclick="selectFoundOnly()">🎯 Select Found Only</button>
+                </div>
+                
+                <!-- Download Controls -->
+                <div class="download-controls">
+                    <div class="input-group" style="max-width: 300px; margin: 0 auto 20px;">
+                        <label for="playlist-name">Playlist Name:</label>
+                        <input type="text" id="playlist-name" placeholder="My Awesome Playlist">
+                    </div>
+                    
+                    <button class="btn" onclick="startDownloads()">
+                        📥 Download Selected Songs
+                    </button>
+                    <button class="btn btn-secondary" onclick="createPlaylistOnly()">
+                        📝 Create Playlist Only
+                    </button>
+                    
+                    <div id="download-progress" class="hidden">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="download-status" id="download-status">Preparing downloads...</div>
+                    </div>
+                </div>
+                
+                <!-- Results List -->
+                <div id="results-list"></div>
+            </div>
+        </div>
+
+        <!-- Existing Playlists -->
+        <div class="card">
+            <h2>🎼 Your Playlists</h2>
+            <div id="playlists-container">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading playlists...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let searchResults = [];
+        let searchInterval;
+        let downloadInterval;
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLibraryStatus();
+            loadPlaylists();
+        });
+
+        // Search form submission
+        document.getElementById('search-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const songList = document.getElementById('song-list').value;
+            
+            if (!songList.trim()) {
+                alert('Please enter some songs to search for');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/search-songs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        song_list: songList
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSearchProgress(result.search_id);
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error starting search: ' + error.message, 'error');
+            }
+        });
+
+        function showSearchProgress(searchId) {
+            const section = document.getElementById('search-results-section');
+            const resultsList = document.getElementById('results-list');
+            
+            section.classList.remove('hidden');
+            resultsList.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Searching YouTube for your songs...</p>
+                    <small>This may take a few minutes depending on the number of songs</small>
+                </div>
+            `;
+            
+            // Poll for results
+            searchInterval = setInterval(() => checkSearchResults(searchId), 2000);
+        }
+
+        async function checkSearchResults(searchId) {
+            try {
+                const response = await fetch(`/search-results/${searchId}`);
+                const data = await response.json();
+                
+                if (data.status === 'complete') {
+                    clearInterval(searchInterval);
+                    searchResults = data.results;
+                    displaySearchResults(data.results);
+                }
+            } catch (error) {
+                console.error('Error checking search results:', error);
+            }
+        }
+
+        function displaySearchResults(results) {
+            const summaryStats = document.getElementById('summary-stats');
+            const resultsList = document.getElementById('results-list');
+            
+            // Calculate stats
+            const stats = {
+                total: results.length,
+                inLibrary: results.filter(r => r.status === 'in_library').length,
+                found: results.filter(r => r.status === 'found').length,
+                notFound: results.filter(r => r.status === 'not_found').length,
+                invalid: results.filter(r => r.status === 'invalid_format').length
+            };
+            
+            // Display summary stats
+            summaryStats.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total}</div>
+                    <div class="stat-label">Total Songs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #38a169;">${stats.inLibrary}</div>
+                    <div class="stat-label">In Library</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #3182ce;">${stats.found}</div>
+                    <div class="stat-label">Found on YouTube</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #e53e3e;">${stats.notFound}</div>
+                    <div class="stat-label">Not Found</div>
+                </div>
+            `;
+            
+            // Display results
+            resultsList.innerHTML = results.map((result, index) => `
+                <div class="song-result">
+                    <div class="song-header">
+                        <div class="song-title">${result.original}</div>
+                        <span class="song-status ${result.status}">${result.status.replace('_', ' ')}</span>
+                    </div>
+                    
+                    ${result.library_match ? `
+                        <div class="library-match">
+                            <div class="library-match-title">✅ Already in your library</div>
+                            <div class="library-match-path">${result.library_match.path}</div>
+                        </div>
+                    ` : ''}
+                    
+                    ${result.youtube_results && result.youtube_results.length > 0 ? `
+                        <div class="youtube-results">
+                            <h4 style="margin-bottom: 15px; color: #4a5568;">YouTube Results:</h4>
+                            ${result.youtube_results.map((video, videoIndex) => `
+                                <div class="youtube-result" onclick="toggleSelection(${index}, ${videoIndex})">
+                                    <input type="checkbox" class="result-checkbox" 
+                                           id="result-${index}-${videoIndex}"
+                                           data-song-index="${index}" 
+                                           data-video-index="${videoIndex}">
+                                    
+                                    <img src="${video.thumbnail}" alt="Thumbnail" class="result-thumbnail" 
+                                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjkwIiB2aWV3Qm94PSIwIDAgMTIwIDkwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iOTAiIGZpbGw9IiNlMmU4ZjAiLz48dGV4dCB4PSI2MCIgeT0iNDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNzE4MDk2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+'">
+                                    
+                                    <div class="result-info">
+                                        <div class="result-title">${video.title}</div>
+                                        <div class="result-meta">
+                                            👤 ${video.uploader || 'Unknown'}<br>
+                                            👁️ ${video.view_count ? formatNumber(video.view_count) : 'Unknown'} views<br>
+                                            📅 ${video.upload_date ? formatDate(video.upload_date) : 'Unknown date'}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="result-duration">
+                                        ${video.duration ? formatDuration(video.duration) : 'Unknown'}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : result.status === 'not_found' ? `
+                        <div style="padding: 20px; text-align: center; color: #718096;">
+                            😞 No YouTube results found for this song
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function toggleSelection(songIndex, videoIndex) {
+            const checkbox = document.getElementById(`result-${songIndex}-${videoIndex}`);
+            const resultDiv = checkbox.closest('.youtube-result');
+            
+            // Uncheck other videos for the same song
+            const songResult = resultDiv.closest('.song-result');
+            const otherCheckboxes = songResult.querySelectorAll('.result-checkbox');
+            otherCheckboxes.forEach(cb => {
+                if (cb !== checkbox) {
+                    cb.checked = false;
+                    cb.closest('.youtube-result').classList.remove('selected');
+                }
+            });
+            
+            // Toggle current selection
+            checkbox.checked = !checkbox.checked;
+            resultDiv.classList.toggle('selected', checkbox.checked);
+        }
+
+        function selectAll() {
+            searchResults.forEach((result, songIndex) => {
+                if (result.youtube_results && result.youtube_results.length > 0) {
+                    const firstCheckbox = document.getElementById(`result-${songIndex}-0`);
+                    if (firstCheckbox && !firstCheckbox.checked) {
+                        toggleSelection(songIndex, 0);
+                    }
+                }
+            });
+        }
+
+        function selectNone() {
+            document.querySelectorAll('.result-checkbox:checked').forEach(checkbox => {
+                const songIndex = parseInt(checkbox.dataset.songIndex);
+                const videoIndex = parseInt(checkbox.dataset.videoIndex);
+                toggleSelection(songIndex, videoIndex);
+            });
+        }
+
+        function selectFoundOnly() {
+            selectNone(); // Clear all first
+            searchResults.forEach((result, songIndex) => {
+                if (result.status === 'found' && result.youtube_results && result.youtube_results.length > 0) {
+                    toggleSelection(songIndex, 0);
+                }
+            });
+        }
+
+        async function startDownloads() {
+            const selectedSongs = getSelectedSongs();
+            
+            if (selectedSongs.length === 0) {
+                alert('Please select at least one song to download');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to download ${selectedSongs.length} song(s)? This will include random delays between downloads to avoid rate limits.`)) {
+                try {
+                    const response = await fetch('/download-selected', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            downloads: selectedSongs
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        showDownloadProgress();
+                    } else {
+                        showAlert(result.error, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error starting downloads: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function getSelectedSongs() {
+            const selected = [];
+            document.querySelectorAll('.result-checkbox:checked').forEach(checkbox => {
+                const songIndex = parseInt(checkbox.dataset.songIndex);
+                const videoIndex = parseInt(checkbox.dataset.videoIndex);
+                const result = searchResults[songIndex];
+                const video = result.youtube_results[videoIndex];
+                
+                selected.push({
+                    artist: result.artist,
+                    title: result.title,
+                    youtube_url: video.webpage_url,
+                    youtube_title: video.title
+                });
+            });
+            return selected;
+        }
+
+        function showDownloadProgress() {
+            const progressDiv = document.getElementById('download-progress');
+            progressDiv.classList.remove('hidden');
+            
+            downloadInterval = setInterval(checkDownloadStatus, 1000);
+        }
+
+        async function checkDownloadStatus() {
+            try {
+                const response = await fetch('/download-status');
+                const status = await response.json();
+                
+                const progressFill = document.getElementById('progress-fill');
+                const statusText = document.getElementById('download-status');
+                
+                if (status.total > 0) {
+                    const percentage = (status.downloaded / status.total) * 100;
+                    progressFill.style.width = `${percentage}%`;
+                }
+                
+                statusText.innerHTML = `
+                    ${status.progress}<br>
+                    ${status.current_song ? `<strong>Current:</strong> ${status.current_song}<br>` : ''}
+                    <strong>Progress:</strong> ${status.downloaded}/${status.total} songs
+                `;
+                
+                if (status.complete || !status.running) {
+                    clearInterval(downloadInterval);
+                    if (status.complete) {
+                        loadPlaylists(); // Refresh playlist list
+                        showAlert('Downloads completed!', 'success');
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking download status:', error);
+            }
+        }
+
+        async function createPlaylistOnly() {
+            const playlistName = document.getElementById('playlist-name').value;
+            const selectedSongs = getSelectedSongs();
+            
+            if (!playlistName.trim()) {
+                alert('Please enter a playlist name');
+                return;
+            }
+            
+            if (selectedSongs.length === 0) {
+                alert('Please select at least one song');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/create-playlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        playlist_name: playlistName,
+                        songs: selectedSongs.map(song => ({
+                            title: `${song.artist} - ${song.title}`,
+                            youtube_url: song.youtube_url
+                        }))
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert(result.message, 'success');
+                    loadPlaylists();
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error creating playlist: ' + error.message, 'error');
+            }
+        }
+
+        async function loadLibraryStatus() {
+            try {
+                const response = await fetch('/library-status');
+                const status = await response.json();
+                
+                document.getElementById('library-status').innerHTML = `
+                    <div class="status-item">
+                        <span>Indexed Tracks:</span>
+                        <span class="status-value">${status.indexed.toLocaleString()}</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Library Path:</span>
+                        <span class="status-value">${status.library_path}</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Download Directory:</span>
+                        <span class="status-value">${status.download_dir}</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Playlist Directory:</span>
+                        <span class="status-value">${status.playlist_dir}</span>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('library-status').innerHTML = `
+                    <div class="alert alert-error">Error loading library status: ${error.message}</div>
+                `;
+            }
+        }
+
+        async function loadPlaylists() {
+            try {
+                const response = await fetch('/playlists');
+                const playlists = await response.json();
+                
+                const container = document.getElementById('playlists-container');
+                
+                if (playlists.length === 0) {
+                    container.innerHTML = '<p>No playlists found. Create your first playlist above!</p>';
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+                        ${playlists.map(playlist => `
+                            <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">${playlist.name}</div>
+                                <div style="font-size: 12px; color: #718096; margin-bottom: 10px;">
+                                    Created: ${new Date(playlist.created).toLocaleDateString()}<br>
+                                    Size: ${playlist.size} bytes
+                                </div>
+                                <button class="btn btn-small" onclick="downloadPlaylist('${playlist.filename}')">
+                                    📥 Download
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('playlists-container').innerHTML = `
+                    <div class="alert alert-error">Error loading playlists: ${error.message}</div>
+                `;
+            }
+        }
+
+        async function reloadIndex() {
+            try {
+                const response = await fetch('/reload-index', { method: 'POST' });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert(result.message, 'success');
+                    loadLibraryStatus();
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error reloading index: ' + error.message, 'error');
+            }
+        }
+
+        function downloadPlaylist(filename) {
+            window.open(`/playlist/${filename}`, '_blank');
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            document.body.insertBefore(alertDiv, document.body.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Utility functions
+        function formatDuration(seconds) {
+            if (!seconds) return 'Unknown';
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Unknown';
+            const year = dateString.substring(0, 4);
+            const month = dateString.substring(4, 6);
+            const day = dateString.substring(6, 8);
+            return `${month}/${day}/${year}`;
+        }
+    </script>
+</body>
+</html>Number(num) {
+            if (num > 1000000000) return (num / 1000000000).toFixed(1) + 'B';
+            if (num > 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num > 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toLocaleString();
+        }
+
+        function format
