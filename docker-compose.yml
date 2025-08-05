@@ -3,30 +3,27 @@ version: '3.8'
 services:
   music-playlist-generator:
     build: .
-    container_name: YT-Suggest
+    container_name: music-playlist-generator
     ports:
       - "5000:5000"
     environment:
       - FLASK_ENV=production
       # Update these paths to match your setup
-      - MUSIC_JSON_PATH=/mnt/resources/music_index.json
-      - PLAYLIST_OUTPUT_DIR=/mnt/playlists
+      - MUSIC_JSON_PATH=/data/music_index.json
+      - PLAYLIST_OUTPUT_DIR=/data/playlists
       - VIRTUAL_MUSIC_ROOT=/music
-      - MUSIC_ROOT=/mnt/hdd3/Music/Derriks_Music
-      - DOWNLOAD_DIR=/mnt/downloads
-      - SECRET_KEY=change-this-to-a-random-string
+      - MUSIC_ROOT=/data/music_library
+      - DOWNLOAD_DIR=/data/downloads
+      - SECRET_KEY=your-generated-secret-key-here
     volumes:
       # Mount your music library (read-only)
-      - /path/to/your/music/library:/mnt/hdd3/Music/Derriks_Music:ro
+      - /path/to/your/music/library:/data/music_library:ro
       # Mount your music index file (read-only) 
-      - /path/to/your/music_index.json:/mnt/resources/music_index.json:ro
+      - /path/to/your/music_index.json:/data/music_index.json:ro
       # Mount playlists directory (read-write)
-      - ./playlists:/mnt/playlists
+      - ./playlists:/data/playlists
       # Mount downloads directory (read-write)
-      - ./downloads:/mnt/downloads
-      # Optional: Mount your existing scripts
-      - ./scripts/auto_tag_lastfm.py:/app/auto_tag_lastfm.py:ro
-      - ./scripts/organize_music.py:/app/organize_music.py:ro
+      - ./downloads:/data/downloads
     restart: unless-stopped
     networks:
       - music-net
